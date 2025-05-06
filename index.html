@@ -1,0 +1,91 @@
+                            <style>
+                  body {
+                    height: 100vh;
+                    display: grid;
+                    align-content: center;
+                    justify-content: center;
+                    background: rgb(255, 211, 172);
+                  }
+                  div {
+                    color: rgb(0, 0, 0);
+                    font-family: Futura, "Trebuchet MS", 
+                      Arial, sans-serif;
+                    font-size: 10vw;
+                    transform: scale(0.5);
+                    transform-origin: center;
+                  }
+                            </style>
+<!-- <body> <div>date</div> </body> -->
+
+<link rel="stylesheet" href="https://generativeart.online/css/drawing-app.css"><script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js"></script>
+
+
+<script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
+<script src="https://unpkg.com/tone"></script>
+<canvas id="myCanvas" /* style="border:1px solid #000000*/;"></canvas>
+
+
+<script> /* global nn, moment, Tone */
+  
+let sec_int; let keydown = false; let angle = 0; const canvas = document.getElementById('myCanvas'); const ctx = canvas.getContext('2d'); canvas.width = nn.width/2; canvas.height = nn.height/2
+  
+  
+const filter = new Tone.Filter({type: 'lowpass',frequency: 800,rolloff: -12
+});const reverb = new Tone.Reverb({decay: 20, wet: 0.4 });const synth = new Tone.PolySynth(Tone.FMSynth, {envelope: {attack: 1,decay: 0.1,sustain: 1,release: 0.5}}).chain(filter, reverb, Tone.Destination); const echo = new Tone.PingPongDelay({delayTime: "8n", feedback: 0.5, wet: 0.4 }).toDestination();synth.chain(filter, echo, reverb, Tone.Destination);
+filter.connect(reverb); //random elements
+
+  
+                          function tick() {
+                      sec_int = moment().format('SSS');
+                      // const dateString = moment().format('HH:mm:ss.SSS')
+                      // nn.get('div').content(dateString)  
+                                  }
+  
+                        async function block(sec_int){
+                          
+                          if (!keydown){
+                            
+                      let ratio = sec_int/1000
+                      let mod = sec_int % 7
+                      
+                      
+ctx.fillStyle = `hsl(${ratio*360}, 100%, 50%)`; 
+ctx.fillRect((1-ratio)*canvas.width, (ratio)*canvas.height, (mod+1)*20, (mod + 1)*10); // x, y, width, height
+                            
+                            
+ctx.fillRect((ratio)*canvas.width, (ratio)*canvas.height, (mod+1)*20, (mod + 1)*10);
+ctx.fillStyle = `hsl(${360-(ratio*360)}, 100%, 50%)`; 
+                            
+                            
+ctx.fillRect((ratio)*canvas.width, (1-ratio)*canvas.height, (mod+1)*20, (mod + 1)*10); ctx.fillRect((1-ratio)*canvas.width, (1-ratio)*canvas.height, (mod+1)*20, (mod + 1)*10);
+       
+                            
+const scale = nn.createScale('E' + mod, 'minor'); await Tone.start(); synth.triggerAttackRelease(scale[mod], '4n');
+                           
+                          keydown = true
+                                }}
+  
+  
+                      function stopPlaying (){
+                        synth.triggerRelease()
+                        keydown = false
+                                }
+  
+  
+                      function rotate_screen(){
+                        angle += 0.5
+                        canvas.style.transform = `rotate(${angle}deg)`
+                                }
+  
+  
+                              tick()
+                          rotate_screen()
+                    nn.on('keydown', () => block(sec_int));
+                    nn.on('keyup', stopPlaying)
+                    setInterval(tick, nn.random(3, 211))
+                    setInterval(rotate_screen, 20)
+  
+//Chatgpt said it couldn't support creating a link if I uploaded a picture myself to it and I couldnt find a way around it. Do I email the chat? It wasnt too long? I think?
+</script>
+Tap Keys!
+
